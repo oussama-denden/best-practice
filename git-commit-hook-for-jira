@@ -1,0 +1,33 @@
+Il serait intéressant de pouvoir identifier les commits associés à des Jira, ceci pour un meilleur suivi  des changements du code source et accélérer les investigations en cas de beugs.
+
+Exemple :
+
+Si j’ai une Jira LCL-1234  « enroll ajouter une checkbox de validation » ,  
+mes commits   doivent  ressembler à :
+-	LCL-1234  ajouter une checkbox dans l’IHM
+-	LCL-1234  mise a jour du DTO et prise en compte dans la couche service
+-	LCL-1234  ……
+ 
+Donc au final, nous allons respecter le pattern LCL-XYZT , sauf cas ou un commit n’est pas lié a une Jira on pourra dans ce cas utiliser  LCL-000.
+ 
+
+Pour renforcer cette pratique  / et éviter les oublis j’ai pensé à un script git (hook)  qui valide en amont le message du commit avant d’arriver sur le serveur gitlab.
+ 
+Les étapes :
+1.	Dans le répo local,  créer le fichier .git/hooks/commit-msg   ( touch .git/hooks/commit-msg)
+2.	Editer le fichier et placer le contenu suivant :
+-----------------------------------------
+#!/bin/sh
+ 
+test "" = "$(grep -P '^LCL-[0-9]+ ' "$1")" && {
+   echo >&2 "******  please, start the commit message with  LCL followed by dash and Jira Id then the commit message !"
+   exit 1
+}
+ 
+exit 0
+ -------------------------
+3.	Rendre exécutable le fichier :   chmod +x .git/hooks/commit-msg
+ 
+ 
+ 
+ 
